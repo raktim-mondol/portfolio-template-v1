@@ -1,13 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Github, Linkedin, Twitter, Mail, ExternalLink } from 'lucide-react';
 import { profileData } from '../../data/profileData';
+import NeuralAnimation from '../../utils/NeuralAnimation';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const [dimensions, setDimensions] = useState({ width: 0, height: 400 });
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: 400
+      });
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
   
   return (
-    <footer className="bg-gray-900 text-white py-12">
-      <div className="container mx-auto px-4 md:px-6">
+    <footer className="bg-gray-900 text-white py-12 relative overflow-hidden">
+      {/* Enhanced Neural Network Animation - Fix opacity with valid Tailwind class */}
+      <div className="absolute inset-0 opacity-20">
+        <NeuralAnimation
+          width={dimensions.width}
+          height={dimensions.height}
+          neuronCount={60}
+          color="#4FD1C5"
+          maxConnections={4}
+          interactive={true}
+          mouseRadius={120}
+          pulseEnabled={true}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Contact Info */}
           <div>

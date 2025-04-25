@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { profileData } from '../../data/profileData';
+import NeuralAnimation from '../../utils/NeuralAnimation';
 
 const Hero: React.FC = () => {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -57,6 +73,20 @@ const Hero: React.FC = () => {
       id="home" 
       className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white relative overflow-hidden pt-20 pb-32"
     >
+      {/* Neural Network Animation with enhanced interactive features */}
+      <div className="absolute inset-0 opacity-30">
+        <NeuralAnimation
+          width={dimensions.width}
+          height={dimensions.height}
+          neuronCount={100}
+          color="#4FD1C5"
+          maxConnections={5}
+          interactive={true}
+          mouseRadius={180}
+          pulseEnabled={true}
+        />
+      </div>
+
       {/* Decorative elements */}
       <motion.div 
         initial={{ opacity: 0 }}
