@@ -7,8 +7,13 @@ import NeuralAnimation from '../../utils/NeuralAnimation';
 const Hero: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [typingText, setTypingText] = useState('');
+  const [titlePrefix, setTitlePrefix] = useState('Expert');
+  const [animationComplete, setAnimationComplete] = useState(false);
   const fullText = "Transforming data into intelligence through deep learning";
   const typingSpeed = 80;
+  
+  // Array of transitioning title words
+  const titleWords = ['Expert', 'Mentor', 'Thinker', 'Leader', 'Dr.'];
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -21,6 +26,24 @@ const Hero: React.FC = () => {
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Title word transition effect
+  useEffect(() => {
+    let currentIndex = 0;
+    
+    const transitionInterval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % titleWords.length;
+      setTitlePrefix(titleWords[currentIndex]);
+      
+      // When we reach "Dr." (the last word), complete the animation
+      if (currentIndex === titleWords.length - 1) {
+        clearInterval(transitionInterval);
+        setTimeout(() => setAnimationComplete(true), 800);
+      }
+    }, 1000);
+    
+    return () => clearInterval(transitionInterval);
   }, []);
 
   // Typing effect for LLM simulation
@@ -91,12 +114,51 @@ const Hero: React.FC = () => {
     }
   };
 
+  // Title prefix animation variants
+  const titlePrefixVariants = {
+    initial: { 
+      opacity: 0, 
+      y: -10 
+    },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.3,
+        ease: "easeOut"
+      } 
+    },
+    exit: { 
+      opacity: 0,
+      y: 10,
+      transition: { 
+        duration: 0.2,
+        ease: "easeIn"
+      } 
+    },
+    final: {
+      opacity: 1,
+      y: 0,
+      scale: [1, 1.1, 1],
+      color: ["#4FD1C5", "#81E6D9", "#4FD1C5"],
+      textShadow: ["0 0 0px rgba(79, 209, 197, 0)", "0 0 8px rgba(79, 209, 197, 0.5)", "0 0 0px rgba(79, 209, 197, 0)"],
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+        times: [0, 0.5, 1]
+      }
+    }
+  };
+
   // AI Concept Icons with animations
   const aiConcepts = [
     { icon: <Brain className="w-6 h-6" />, label: "Neural Networks", delay: 0.4 },
     { icon: <Zap className="w-6 h-6" />, label: "LLMs", delay: 0.6 },
     { icon: <BarChart2 className="w-6 h-6" />, label: "Data Analysis", delay: 0.8 }
   ];
+
+  // Get name without title prefix
+  const nameWithoutPrefix = profileData.name.split(" ").slice(1).join(" ");
 
   return (
     <section 
@@ -155,9 +217,21 @@ const Hero: React.FC = () => {
           >
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 flex flex-wrap"
             >
-              {profileData.name}
+              <div className="mr-2 relative overflow-hidden inline-flex h-[1.25em]">
+                <motion.span 
+                  key={titlePrefix}
+                  variants={animationComplete ? titlePrefixVariants : undefined}
+                  initial="initial"
+                  animate={animationComplete ? "final" : "animate"}
+                  exit="exit"
+                  className="inline-block text-teal-400"
+                >
+                  {titlePrefix}
+                </motion.span>
+              </div>
+              {nameWithoutPrefix}
             </motion.h1>
             <motion.h2 
               variants={itemVariants}
