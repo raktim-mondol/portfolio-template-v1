@@ -47,6 +47,48 @@ export const profileData: ProfileData = {
 
 export const researchProjects: ResearchProject[] = [
   {
+    id: "llm-rag",
+    title: "Adaptive RAG System",
+    description: "A novel Retrieval-Augmented Generation (RAG) system that dynamically adapts its retrieval strategy based on query complexity and context. Features hybrid vector and semantic search with self-improving relevance feedback.",
+    thumbnail: "https://images.pexels.com/photos/7092613/pexels-photo-7092613.jpeg",
+    category: "Large Language Models",
+    technologies: ["LangChain", "OpenAI", "PyTorch", "Faiss", "Redis"],
+    date: "2024",
+    links: {
+      demo: "https://example.com/rag-demo",
+      paper: "https://example.com/rag-paper",
+      github: "https://github.com/example/adaptive-rag"
+    }
+  },
+  {
+    id: "sentiment-viz",
+    title: "Real-time Sentiment Analysis Dashboard",
+    description: "An advanced sentiment analysis system using transformer models and interactive visualizations. Processes streaming social media data to provide real-time sentiment insights with emotion classification and trend analysis.",
+    thumbnail: "https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg",
+    category: "Natural Language Processing",
+    technologies: ["Hugging Face", "D3.js", "FastAPI", "PostgreSQL", "Kafka"],
+    date: "2024",
+    links: {
+      demo: "https://example.com/sentiment-demo",
+      paper: "https://example.com/sentiment-paper",
+      github: "https://github.com/example/sentiment-viz"
+    }
+  },
+  {
+    id: "gen-ai-assistant",
+    title: "MultiModal AI Assistant",
+    description: "A sophisticated AI assistant that combines text, image, and audio understanding. Features multi-turn dialogue, image generation/editing, and voice interaction with context-aware responses.",
+    thumbnail: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg",
+    category: "Generative AI",
+    technologies: ["DALL-E", "Whisper", "GPT-4", "React", "WebGL"],
+    date: "2023",
+    links: {
+      demo: "https://example.com/assistant-demo",
+      paper: "https://example.com/assistant-paper",
+      github: "https://github.com/example/multimodal-assistant"
+    }
+  },
+  {
     id: "neuronet-3d",
     title: "NeuroNet-3D",
     description: "A novel deep learning architecture for real-time 3D reconstruction from monocular video with applications in robotic navigation.",
