@@ -2,19 +2,76 @@ import React, { useEffect, useState } from 'react';
 import { ChevronDown, Zap, Brain, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { profileData } from '../../data/profileData';
-import NeuralAnimation from '../../utils/NeuralAnimation';
+import AnimatedTitle from './AnimatedTitle';
+import HeroBackground from './HeroBackground';
+import ConceptBadges from './ConceptBadges';
+
+// Define the AI concepts array that will be displayed in the Hero section
+const aiConcepts = [
+  { icon: <Zap size={18} />, label: "Deep Learning" },
+  { icon: <Brain size={18} />, label: "Neural Networks" },
+  { icon: <BarChart2 size={18} />, label: "Data Analysis" }
+];
 
 const Hero: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [typingText, setTypingText] = useState('');
-  const [titlePrefix, setTitlePrefix] = useState('Expert');
-  const [animationComplete, setAnimationComplete] = useState(false);
-  const fullText = "Transforming data into intelligence through deep learning";
-  const typingSpeed = 80;
-  
-  // Array of transitioning title words
-  const titleWords = ['Expert', 'Mentor', 'Thinker', 'Leader', 'Dr.'];
 
+  // Title animation words
+  const titleWords = ['Dr.', 'Dreamer.', 'Designer.', 'Developer.', 'Discoverer.'];
+  const nameWithoutPrefix = profileData.name.split(" ").slice(1).join(" ");
+  
+  // PyTorch multi-GPU LLM training code for background animation
+  const pythonCode = `
+# Training loop with progress display
+loss_history = []
+for epoch in range(training_args.num_train_epochs):
+    print(f"[GPU {local_rank}] Starting Epoch {epoch+1}/{training_args.num_train_epochs}")
+    print(f"[{'=' * 5}{' ' * 15}] 5%")
+    time.sleep(0.2)
+    
+    # Simulate batch iterations with progress updates
+    for i in range(10):
+        # Simulate progress updates
+        progress = min(100, (i+1) * 10)
+        filled = int(progress / 5)
+        empty = 20 - filled
+        
+        # Simulate different losses for GPUs to show parallelism
+        loss_val = 4.5678 - (epoch * 0.5) - (i * 0.2) + (local_rank * 0.01)
+        if loss_val < 0.5: 
+            loss_val = 0.5 + (local_rank * 0.01)
+            
+        # Show current training metrics with progress bar
+        if dist.get_rank() == 0:
+            print(f"[{'=' * filled}{' ' * empty}] {progress}% | Loss: {loss_val:.4f} | lr: {5e-5:.2e} | GPU Memory: {torch.cuda.max_memory_allocated(device)/1024**3:.1f}GB | Step: {i+1}/10")
+            if progress < 100:
+                print(f"GPU 0: Processing batch {i+1}/10 | Loss: {loss_val:.4f}")
+                time.sleep(0.15)
+                print(f"GPU 1: Processing batch {i+1}/10 | Loss: {loss_val+0.01:.4f}")
+                time.sleep(0.12)
+                print(f"GPU 2: Processing batch {i+1}/10 | Loss: {loss_val+0.02:.4f}")
+                time.sleep(0.18)
+                print(f"GPU 3: Processing batch {i+1}/10 | Loss: {loss_val+0.03:.4f}")
+    
+    # End of epoch stats
+    avg_loss = 4.5678 - (epoch * 0.8)
+    if avg_loss < 0.6: avg_loss = 0.6
+    print(f"\n[GPU 0] Epoch {epoch+1} completed - Average Loss: {avg_loss:.4f}")
+    print(f"[GPU 1] Epoch {epoch+1} completed - Average Loss: {avg_loss+0.01:.4f}")
+    
+    # Save checkpoint
+    if dist.get_rank() == 0:
+        print(f">> Saving model checkpoint for epoch {epoch+1}")
+        print(f">> Training speed: {8192/(epoch+1):.1f} tokens/sec/GPU\n")
+
+print(">> Training completed successfully")
+print(">> Done!"
+`;
+
+  const typingSpeed = 5; // Faster for code to make it look more like real output
+
+  // Update dimensions for responsive design
   useEffect(() => {
     const updateDimensions = () => {
       setDimensions({
@@ -28,260 +85,90 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  // Title word transition effect
+  // Handle the typing animation effect for code
   useEffect(() => {
     let currentIndex = 0;
-    
-    const transitionInterval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % titleWords.length;
-      setTitlePrefix(titleWords[currentIndex]);
-      
-      // When we reach "Dr." (the last word), complete the animation
-      if (currentIndex === titleWords.length - 1) {
-        clearInterval(transitionInterval);
-        setTimeout(() => setAnimationComplete(true), 800);
-      }
-    }, 1000);
-    
-    return () => clearInterval(transitionInterval);
-  }, []);
 
-  // Typing effect for LLM simulation
-  useEffect(() => {
-    let currentIndex = 0;
-    
     const typingInterval = setInterval(() => {
-      if (currentIndex <= fullText.length) {
-        setTypingText(fullText.slice(0, currentIndex));
+      if (currentIndex <= pythonCode.length) {
+        setTypingText(pythonCode.slice(0, currentIndex));
         currentIndex++;
       } else {
-        // Reset typing after a pause
+        // Reset to beginning after a delay to create continuous effect
         setTimeout(() => {
           currentIndex = 0;
-        }, 3000);
+          setTypingText('');
+        }, 2000);
       }
     }, typingSpeed);
 
     return () => clearInterval(typingInterval);
   }, []);
 
-  // Variants for animations
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const imageVariants = {
-    hidden: { opacity: 0, x: 100 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        delay: 0.6,
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  // Title prefix animation variants
-  const titlePrefixVariants = {
-    initial: { 
-      opacity: 0, 
-      y: -10 
-    },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.3,
-        ease: "easeOut"
-      } 
-    },
-    exit: { 
-      opacity: 0,
-      y: 10,
-      transition: { 
-        duration: 0.2,
-        ease: "easeIn"
-      } 
-    },
-    final: {
-      opacity: 1,
-      y: 0,
-      scale: [1, 1.1, 1],
-      color: ["#4FD1C5", "#81E6D9", "#4FD1C5"],
-      textShadow: ["0 0 0px rgba(79, 209, 197, 0)", "0 0 8px rgba(79, 209, 197, 0.5)", "0 0 0px rgba(79, 209, 197, 0)"],
-      transition: {
-        duration: 0.8,
-        ease: "easeOut",
-        times: [0, 0.5, 1]
-      }
-    }
-  };
-
-  // AI Concept Icons with animations
-  const aiConcepts = [
-    { icon: <Brain className="w-6 h-6" />, label: "Neural Networks", delay: 0.4 },
-    { icon: <Zap className="w-6 h-6" />, label: "LLMs", delay: 0.6 },
-    { icon: <BarChart2 className="w-6 h-6" />, label: "Data Analysis", delay: 0.8 }
-  ];
-
-  // Get name without title prefix
-  const nameWithoutPrefix = profileData.name.split(" ").slice(1).join(" ");
-
   return (
     <section 
       id="home" 
       className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white relative overflow-hidden pt-20 pb-32"
     >
-      {/* Neural Network Animation with enhanced interactive features */}
-      <div className="absolute inset-0 opacity-30">
-        <NeuralAnimation
-          width={dimensions.width}
-          height={dimensions.height}
-          neuronCount={100}
-          color="#4FD1C5"
-          maxConnections={5}
-          interactive={true}
-          mouseRadius={180}
-          pulseEnabled={true}
-        />
-      </div>
-
-      {/* LLM Typing simulation overlay */}
-      <div className="absolute bottom-40 left-10 right-10 opacity-20 font-mono text-sm md:text-base overflow-hidden">
-        <div className="flex">
-          <span className="text-teal-400 mr-2">&gt;</span>
-          <span className="text-teal-100">{typingText}</span>
-          <span className="animate-pulse">_</span>
-        </div>
-      </div>
-
-      {/* Decorative elements */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5 }}
-        className="absolute inset-0 overflow-hidden"
-      >
-        <div className="animate-pulse absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-teal-500 opacity-10 blur-3xl"></div>
-        <div className="animate-pulse absolute bottom-1/3 right-1/3 w-96 h-96 rounded-full bg-blue-500 opacity-10 blur-3xl"></div>
-      </motion.div>
+      {/* Background animations and effects */}
+      <HeroBackground dimensions={dimensions} typingText={typingText} />
       
-      {/* Grid pattern overlay */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.1 }}
-        transition={{ duration: 1 }}
-        className="absolute inset-0 bg-grid-pattern"
-      ></motion.div>
-      
-      <div className="container mx-auto px-4 md:px-6 z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
+      <div className="container mx-auto px-4 md:px-6 z-10 max-w-7xl">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
           <motion.div 
-            variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="lg:w-1/2 lg:pr-12"
+            className="lg:w-3/5 lg:pr-12"
           >
+            {/* Animated title with expanding text effect */}
             <motion.h1 
-              variants={itemVariants}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 flex flex-wrap"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 flex items-center"
             >
-              <div className="mr-2 relative overflow-hidden inline-flex h-[1.25em]">
-                <motion.span 
-                  key={titlePrefix}
-                  variants={animationComplete ? titlePrefixVariants : undefined}
-                  initial="initial"
-                  animate={animationComplete ? "final" : "animate"}
-                  exit="exit"
-                  className="inline-block text-teal-400"
-                >
-                  {titlePrefix}
-                </motion.span>
-              </div>
-              {nameWithoutPrefix}
+              <AnimatedTitle 
+                words={titleWords} 
+                suffix={nameWithoutPrefix} 
+              />
             </motion.h1>
+
             <motion.h2 
-              variants={itemVariants}
               className="text-xl md:text-2xl text-teal-400 mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
             >
               {profileData.title}
             </motion.h2>
             
             <motion.p 
-              variants={itemVariants}
-              className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed"
+              className="text-base md:text-lg text-gray-300 mb-8 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
             >
               {profileData.bio}
             </motion.p>
             
-            {/* AI Concept Icons */}
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-wrap mb-8 gap-6"
-            >
-              {aiConcepts.map((concept, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-gray-700"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: concept.delay, duration: 0.5 }}
-                >
-                  <span className="text-teal-400">{concept.icon}</span>
-                  <span className="text-sm font-medium">{concept.label}</span>
-                </motion.div>
-              ))}
-            </motion.div>
+            {/* AI concept badges */}
+            <ConceptBadges concepts={aiConcepts} />
 
             <motion.div 
-              variants={itemVariants}
               className="flex flex-wrap gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
             >
               <motion.a 
                 href="#research" 
-                className="px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-all duration-300"
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="px-5 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 View Research
               </motion.a>
               <motion.a 
                 href="#contact" 
-                className="px-6 py-3 border border-white text-white rounded-md hover:bg-white hover:text-gray-900 transition-all duration-300"
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="px-5 py-2 border border-white text-white rounded-md hover:bg-white hover:text-gray-900 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Contact Me
@@ -289,13 +176,13 @@ const Hero: React.FC = () => {
             </motion.div>
           </motion.div>
           
+          {/* Profile image and interests card */}
           <div className="lg:w-1/2 relative">
             <motion.div 
-              variants={imageVariants}
-              initial="hidden"
-              animate="visible"
-              className="relative overflow-hidden rounded-2xl shadow-2xl"
-              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+              className="relative overflow-hidden rounded-2xl shadow-2xl max-w-md mx-auto"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
             >
               <img 
                 src={profileData.profileImage} 
@@ -305,26 +192,23 @@ const Hero: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-50"></div>
             </motion.div>
             
-            {/* Floating card with research interests */}
             <motion.div 
-              variants={cardVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="absolute -bottom-24 -left-10 bg-white text-gray-800 p-6 rounded-lg shadow-xl max-w-xs"
+              className="absolute -bottom-20 -left-10 bg-white text-gray-800 p-5 rounded-lg shadow-xl max-w-xs"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <h3 className="text-lg font-semibold mb-3 text-gray-900">Research Interests</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Research Interests</h3>
               <motion.ul 
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
                 className="space-y-1"
               >
                 {profileData.interests.map((interest, index) => (
                   <motion.li 
                     key={index}
-                    variants={itemVariants}
                     className="flex items-center text-sm"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 + (index * 0.1), duration: 0.5 }}
                   >
                     <span className="w-2 h-2 bg-teal-500 rounded-full mr-2"></span>
                     {interest}
@@ -336,18 +220,18 @@ const Hero: React.FC = () => {
         </div>
       </div>
       
-      {/* Scroll indicator */}
+      {/* Scroll down indicator */}
       <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.5 }}
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.8 }}
       >
         <motion.a 
           href="#research" 
           className="flex flex-col items-center transition-colors duration-300 hover:text-teal-400"
           animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           <span className="text-sm text-gray-300 mb-2">Scroll Down</span>
           <ChevronDown size={24} className="text-teal-400" />

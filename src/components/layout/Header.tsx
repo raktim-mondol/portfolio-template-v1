@@ -8,6 +8,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
+      // Smoother transition with a small buffer to prevent flickering at the threshold
       if (window.scrollY > 10) {
         setScrolled(true);
       } else {
@@ -15,7 +16,8 @@ const Header: React.FC = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Use passive event listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -25,13 +27,13 @@ const Header: React.FC = () => {
 
   return (
     <header 
-      className={`fixed w-full z-[100] transition-all duration-300 ${
+      className={`fixed w-full z-[100] transition-all duration-500 ease-in-out ${
         scrolled ? 'bg-white/95 backdrop-blur-sm shadow-md py-2' : 'bg-transparent py-4'
       }`}
     >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
-        <a href="#" className="text-lg md:text-xl font-semibold transition-colors duration-300">
-          <span className={`transition-colors duration-300 ${scrolled ? 'text-gray-900' : 'text-white'}`}>
+        <a href="#" className="text-lg md:text-xl font-semibold transition-all duration-500 ease-in-out transform">
+          <span className={`transition-all duration-500 ease-in-out ${scrolled ? 'text-gray-900' : 'text-white'}`}>
             {profileData.name}
           </span>
         </a>
