@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Zap, Brain, BarChart2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { profileData } from '../../data/profileData';
 import NeuralAnimation from '../../utils/NeuralAnimation';
 
 const Hero: React.FC = () => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [typingText, setTypingText] = useState('');
+  const fullText = "Transforming data into intelligence through deep learning";
+  const typingSpeed = 80;
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -20,6 +23,26 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
+  // Typing effect for LLM simulation
+  useEffect(() => {
+    let currentIndex = 0;
+    
+    const typingInterval = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setTypingText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        // Reset typing after a pause
+        setTimeout(() => {
+          currentIndex = 0;
+        }, 3000);
+      }
+    }, typingSpeed);
+
+    return () => clearInterval(typingInterval);
+  }, []);
+
+  // Variants for animations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -68,6 +91,13 @@ const Hero: React.FC = () => {
     }
   };
 
+  // AI Concept Icons with animations
+  const aiConcepts = [
+    { icon: <Brain className="w-6 h-6" />, label: "Neural Networks", delay: 0.4 },
+    { icon: <Zap className="w-6 h-6" />, label: "LLMs", delay: 0.6 },
+    { icon: <BarChart2 className="w-6 h-6" />, label: "Data Analysis", delay: 0.8 }
+  ];
+
   return (
     <section 
       id="home" 
@@ -85,6 +115,15 @@ const Hero: React.FC = () => {
           mouseRadius={180}
           pulseEnabled={true}
         />
+      </div>
+
+      {/* LLM Typing simulation overlay */}
+      <div className="absolute bottom-40 left-10 right-10 opacity-20 font-mono text-sm md:text-base overflow-hidden">
+        <div className="flex">
+          <span className="text-teal-400 mr-2">&gt;</span>
+          <span className="text-teal-100">{typingText}</span>
+          <span className="animate-pulse">_</span>
+        </div>
       </div>
 
       {/* Decorative elements */}
@@ -134,6 +173,25 @@ const Hero: React.FC = () => {
               {profileData.bio}
             </motion.p>
             
+            {/* AI Concept Icons */}
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-wrap mb-8 gap-6"
+            >
+              {aiConcepts.map((concept, index) => (
+                <motion.div
+                  key={index}
+                  className="flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-gray-700"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: concept.delay, duration: 0.5 }}
+                >
+                  <span className="text-teal-400">{concept.icon}</span>
+                  <span className="text-sm font-medium">{concept.label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+
             <motion.div 
               variants={itemVariants}
               className="flex flex-wrap gap-4"
